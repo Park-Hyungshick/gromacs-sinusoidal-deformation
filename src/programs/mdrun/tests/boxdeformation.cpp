@@ -99,6 +99,7 @@ TEST_F(BoxDeformationTest, flowDoesNotAffectEkin)
             "nsteps           = 0\n"
             "gen-vel          = yes\n"
             "gen-temp         = 0\n"
+            "deform-type      = linear\n"
             "deform           = 0 0 0 0 6e-2 0\n"
             "deform-init-flow = yes\n";
 
@@ -142,6 +143,7 @@ TEST_F(BoxDeformationTest, EnergiesWithinTolerances)
             "fourier-spacing  = 0.12\n"
             "dt               = 0.002\n"
             "nsteps           = 20\n"
+            "deform-type      = linear\n"
             "deform           = 0 0 0 0 1.86e-2 0\n"
             "deform-init-flow = yes\n";
 
@@ -194,6 +196,7 @@ TEST_F(PositionRestraintCommTest, PositionRestraintsTwoCOMs)
             "tc-grps          = system\n"
             "ref-t            = 298\n"
             "tau-t            = 0.5\n"
+            "deform-type      = linear\n"
             "deform           = 0 0 0 0 2.5 0\n"
             "deform-init-flow = yes\n";
 
