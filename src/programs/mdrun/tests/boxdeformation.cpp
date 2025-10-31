@@ -171,6 +171,99 @@ TEST_F(BoxDeformationTest, EnergiesWithinTolerances)
     }
 }
 
+// Check that a system with Ekin=0 reports Ekin=0 under sinusoidal deformation
+TEST_F(BoxDeformationTest, SinusoidalflowDoesNotAffectEkin)
+{
+    // Test sinusoidal deformation with a simple LJ system
+    // We use gen-temp=0 to ensure deterministic behavior (like flowDoesNotAffectEkin)
+    // This verifies that the sinusoidal flow field is applied without affecting kinetic energy
+    std::string theMdpFile =
+            "coulombtype      = reaction-field\n"
+            "nstenergy        = 10\n"
+            "nstlist          = 10\n"
+            "verlet-buffer-tolerance = -1\n"
+            "rlist            = 0.33\n"
+            "rcoulomb         = 0.3\n"
+            "rvdw             = 0.3\n"
+            "dt               = 0.002\n"
+            "nsteps           = 20\n"
+            "gen-vel          = yes\n"
+            "gen-temp         = 0\n"
+            "deform-type      = sinusoidal\n"
+            "deform-sin-amplitude = 0 0 0 0 6e-2 0\n"
+            "deform-sin-period    = 0 0 0 0 0.04 0\n"
+            "deform-init-flow = yes\n";
+
+    const auto& simulationName = "argon12";
+
+    // Prepare the .tpr file
+    {
+        CommandLine caller;
+        runner_.useTopGroAndNdxFromDatabase(simulationName);
+        runner_.useStringAsMdpFile(theMdpFile);
+        EXPECT_EQ(0, runner_.callGrompp(caller));
+    }
+    // Do mdrun
+    {
+        CommandLine mdrunCaller;
+        ASSERT_EQ(0, runner_.callMdrun(mdrunCaller));
+        // Use same tolerance as flowDoesNotAffectEkin since we also use gen-temp=0
+        auto relativeTolerance = relativeToleranceAsFloatingPoint(0.01, GMX_DOUBLE ? 1e-6 : 1e-4);
+        EnergyTermsToCompare energyTermsToCompare{ { interaction_function[F_EKIN].longname,
+                                                     relativeTolerance } };
+        TestReferenceData    refData;
+        auto checker = refData.rootChecker().checkCompound("Simulation", simulationName);
+        checkEnergiesAgainstReferenceData(runner_.edrFileName_, energyTermsToCompare, &checker);
+    }
+}
+
+// Check that a sinusoidally deformed water box has correct Epot and Ekin
+TEST_F(BoxDeformationTest, SinusoidalEnergiesWithinTolerances)
+{
+    // We use sinusoidal deformation with one complete cycle (0.16 ps)
+    // Amplitude A = 7.44e-4 nm and period T = 0.16 ps
+    // This gives comparable strain to the linear test over one quarter period
+    std::string theMdpFile =
+            "coulombtype      = PME\n"
+            "nstenergy        = 10\n"
+            "nstlist          = 10\n"
+            "verlet-buffer-tolerance = -1\n"
+            "rlist            = 0.93\n"
+            "rcoulomb         = 0.9\n"
+            "rvdw             = 0.9\n"
+            "pme-order        = 4\n"
+            "fourier-spacing  = 0.12\n"
+            "dt               = 0.002\n"
+            "nsteps           = 80\n"
+            "deform-type      = sinusoidal\n"
+            "deform-sin-amplitude = 0 0 0 0 7.44e-4 0\n"
+            "deform-sin-period    = 0 0 0 0 0.16 0\n"
+            "deform-init-flow = yes\n";
+
+    const auto& simulationName = "spc216";
+
+    // Prepare the .tpr file
+    {
+        CommandLine caller;
+        runner_.useTopGroAndNdxFromDatabase(simulationName);
+        runner_.useStringAsMdpFile(theMdpFile);
+        EXPECT_EQ(0, runner_.callGrompp(caller));
+    }
+    // Do mdrun
+    {
+        CommandLine mdrunCaller;
+        ASSERT_EQ(0, runner_.callMdrun(mdrunCaller));
+        auto relativeTolerance = relativeToleranceAsFloatingPoint(2, GMX_DOUBLE ? 1e-6 : 1e-4);
+        EnergyTermsToCompare energyTermsToCompare{
+            { { interaction_function[F_EPOT].longname, relativeTolerance },
+              { interaction_function[F_EKIN].longname, relativeTolerance } }
+        };
+        TestReferenceData refData;
+        auto checker = refData.rootChecker().checkCompound("Simulation", simulationName);
+        checkEnergiesAgainstReferenceData(runner_.edrFileName_, energyTermsToCompare, &checker);
+    }
+}
+
 class PositionRestraintCommTest : public MdrunTestFixture
 {
 };

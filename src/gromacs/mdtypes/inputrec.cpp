@@ -1655,8 +1655,20 @@ void comp_pull_AB(FILE* fp, const pull_params_t& pull, real ftol, real abstol)
 
 gmx_bool inputrecDeform(const t_inputrec* ir)
 {
-    return (ir->deform[XX][XX] != 0 || ir->deform[YY][YY] != 0 || ir->deform[ZZ][ZZ] != 0
-            || ir->deform[YY][XX] != 0 || ir->deform[ZZ][XX] != 0 || ir->deform[ZZ][YY] != 0);
+    // Check linear deformation (deform matrix)
+    bool hasLinearDeform = (ir->deform[XX][XX] != 0 || ir->deform[YY][YY] != 0 || ir->deform[ZZ][ZZ] != 0
+                           || ir->deform[YY][XX] != 0 || ir->deform[ZZ][XX] != 0 || ir->deform[ZZ][YY] != 0);
+
+    // Check sinusoidal deformation (amplitude and period)
+    bool hasSinusoidalDeform = false;
+    if (ir->deformType == DeformationType::Sinusoidal)
+    {
+        hasSinusoidalDeform = (ir->deform_sin_amplitude[XX][XX] != 0 || ir->deform_sin_amplitude[YY][YY] != 0
+                             || ir->deform_sin_amplitude[ZZ][ZZ] != 0 || ir->deform_sin_amplitude[YY][XX] != 0
+                             || ir->deform_sin_amplitude[ZZ][XX] != 0 || ir->deform_sin_amplitude[ZZ][YY] != 0);
+    }
+
+    return hasLinearDeform || hasSinusoidalDeform;
 }
 
 gmx_bool inputrecDynamicBox(const t_inputrec* ir)
