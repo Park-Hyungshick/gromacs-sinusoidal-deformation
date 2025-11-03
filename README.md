@@ -143,12 +143,12 @@ This avoids unnecessary function calls for linear deformation.
 - [x] Interface integration
 - [x] Velocity field calculation
 - [x] Performance optimization
+- [x] Add sinusoidal test case to `src/programs/mdrun/tests/boxdeformation.cpp`
+- [x] Energy conservation check (NVE)
 
 ### ⚠️ Required Before Production Use
-- [ ] Add sinusoidal test case to `src/programs/mdrun/tests/boxdeformation.cpp`
 - [ ] Validate box oscillation (amplitude, period, phase)
 - [ ] Verify velocity field with analytical solution
-- [ ] Energy conservation check (NVE)
 - [ ] Stress tensor response
 - [ ] Checkpoint/restart compatibility
 - [ ] MPI parallel testing
@@ -157,10 +157,9 @@ This avoids unnecessary function calls for linear deformation.
 
 ## Known Limitations
 
-1. **Single Type**: Cannot combine linear + sinusoidal simultaneously
-2. **Testing**: Extensive validation needed before production
-3. **Checkpointing**: May require special handling for restart
-4. **Documentation**: Not in official GROMACS manual
+1. **Testing**: Extensive validation needed before production
+2. **Checkpointing**: May require special handling for restart
+3. **Documentation**: Not in official GROMACS manual
 
 ---
 
@@ -173,17 +172,6 @@ This avoids unnecessary function calls for linear deformation.
 - **Use at your own risk for research**
 - **Validate results thoroughly**
 - **Test with simple systems first**
-
----
-
-## Future Enhancements (Optional)
-
-If useful for research:
-- [ ] Combined linear + sinusoidal
-- [ ] Phase offset parameter
-- [ ] Multiple frequency components
-- [ ] Cosine deformation mode
-- [ ] Amplitude ramp-up/down
 
 ---
 
