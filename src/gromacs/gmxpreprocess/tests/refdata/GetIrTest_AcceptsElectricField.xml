@@ -277,7 +277,10 @@ accelerate               =
 freezegrps               = 
 freezedim                = 
 cos-acceleration         = 0
+deform-type              = no
 deform                   = 
+deform-sin-amplitude     = 
+deform-sin-period        = 
 deform-init-flow         = no
 
 ; simulated tempering variables

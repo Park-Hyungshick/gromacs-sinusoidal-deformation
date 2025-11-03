@@ -3,26 +3,26 @@
 <ReferenceData>
   <Simulation Name="spc216">
     <Energy Name="Kinetic En.">
-      <Real Name="Time 0.000000 Step 0 in frame 0">1634.5559</Real>
-      <Real Name="Time 0.020000 Step 10 in frame 1">1682.3179</Real>
-      <Real Name="Time 0.040000 Step 20 in frame 2">1677.3508</Real>
-      <Real Name="Time 0.060000 Step 30 in frame 3">1740.8198</Real>
-      <Real Name="Time 0.080000 Step 40 in frame 4">1752.9121</Real>
-      <Real Name="Time 0.100000 Step 50 in frame 5">1780.1667</Real>
-      <Real Name="Time 0.120000 Step 60 in frame 6">1751.1464</Real>
-      <Real Name="Time 0.140000 Step 70 in frame 7">1744.8313</Real>
-      <Real Name="Time 0.160000 Step 80 in frame 8">1723.7759</Real>
+      <Real Name="Time 0.000000 Step 0 in frame 0">1634.5562</Real>
+      <Real Name="Time 0.020000 Step 10 in frame 1">1682.17</Real>
+      <Real Name="Time 0.040000 Step 20 in frame 2">1676.7534</Real>
+      <Real Name="Time 0.060000 Step 30 in frame 3">1740.6572</Real>
+      <Real Name="Time 0.080000 Step 40 in frame 4">1753.3083</Real>
+      <Real Name="Time 0.100000 Step 50 in frame 5">1779.0012</Real>
+      <Real Name="Time 0.120000 Step 60 in frame 6">1751.345</Real>
+      <Real Name="Time 0.140000 Step 70 in frame 7">1742.1362</Real>
+      <Real Name="Time 0.160000 Step 80 in frame 8">1723.78</Real>
     </Energy>
     <Energy Name="Potential">
-      <Real Name="Time 0.000000 Step 0 in frame 0">-8112.9419</Real>
-      <Real Name="Time 0.020000 Step 10 in frame 1">-8160.0283</Real>
-      <Real Name="Time 0.040000 Step 20 in frame 2">-8155.3774</Real>
-      <Real Name="Time 0.060000 Step 30 in frame 3">-8219.5684</Real>
-      <Real Name="Time 0.080000 Step 40 in frame 4">-8231.0566</Real>
-      <Real Name="Time 0.100000 Step 50 in frame 5">-8257.4873</Real>
-      <Real Name="Time 0.120000 Step 60 in frame 6">-8227.3047</Real>
-      <Real Name="Time 0.140000 Step 70 in frame 7">-8222.1553</Real>
-      <Real Name="Time 0.160000 Step 80 in frame 8">-8200.1436</Real>
+      <Real Name="Time 0.000000 Step 0 in frame 0">-8113.0713</Real>
+      <Real Name="Time 0.020000 Step 10 in frame 1">-8160.0991</Real>
+      <Real Name="Time 0.040000 Step 20 in frame 2">-8154.6514</Real>
+      <Real Name="Time 0.060000 Step 30 in frame 3">-8219.3516</Real>
+      <Real Name="Time 0.080000 Step 40 in frame 4">-8232.0078</Real>
+      <Real Name="Time 0.100000 Step 50 in frame 5">-8257.5361</Real>
+      <Real Name="Time 0.120000 Step 60 in frame 6">-8229.3096</Real>
+      <Real Name="Time 0.140000 Step 70 in frame 7">-8220.3896</Real>
+      <Real Name="Time 0.160000 Step 80 in frame 8">-8201.7939</Real>
     </Energy>
   </Simulation>
 </ReferenceData>

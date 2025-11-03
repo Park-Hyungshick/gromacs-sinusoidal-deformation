@@ -185,14 +185,17 @@ This avoids unnecessary function calls for linear deformation.
 
 ### Error Tolerance Analysis
 
-**Tolerance Setting**: `1e-3` (0.1% relative error)
+#### Test Environment (2025-11-03)
+- **Build Configuration**: `GPU=OFF` (CPU-only, single precision)
+- **Tolerance Setting**: `1e-3` = **0.1% relative energy difference**
+- **Formula**: `|E_measured - E_reference| ≤ 0.001 × |E_reference|`
 
 #### Why This Tolerance?
 
 **1. MPI Parallel Reduction Order**
 - **1-rank**: Sequential floating-point operations
 - **2-rank**: Parallel reductions with different summation order
-- **Result**: Numerical differences up to 0.1% (1.7 kJ/mol out of 1744 kJ/mol)
+- **Result**: Numerical differences due to floating-point operation order
 
 **2. Accumulated Numerical Errors**
 - **Sinusoidal test**: 80 steps (4× longer than linear test)
@@ -203,24 +206,27 @@ This avoids unnecessary function calls for linear deformation.
 
 | Aspect | Value | Assessment |
 |--------|-------|------------|
-| Absolute error | ~1.7 kJ/mol | ✅ Safe |
-| Per-atom error | ~0.0026 kJ/mol | ✅ << kT (2.5 kJ/mol at 300K) |
-| Relative error | 0.1% | ✅ Well within thermal fluctuations |
+| Relative tolerance | 0.1% (1e-3) | ✅ Safe for CPU-only builds |
+| Example: E = 1000 kJ/mol | ±1.0 kJ/mol allowed | ✅ Physically reasonable |
+| Per-atom error (SPC216) | ~0.005 kJ/mol | ✅ << kT (2.5 kJ/mol at 300K) |
 | Energy drift | Non-systematic | ✅ No accumulation over time |
 
 **4. Industry Standards**
 - **LAMMPS**: MPI parallel runs allow ~0.5% difference
 - **NAMD**: Platform differences (CPU/GPU) accept ~1-2%
-- **This implementation**: 0.1% is conservative
+- **This implementation (GPU=OFF)**: 0.1% is conservative
 
-#### Validation
+#### Validation (GPU=OFF Build)
 ```bash
-# Both tests pass with 1e-3 tolerance
-$ ctest -R MdrunTestsOneRank   # ✅ PASSED
-$ ctest -R MdrunTestsTwoRank   # ✅ PASSED
+# Both tests pass with 0.1% relative tolerance
+$ ctest -R MdrunTestsOneRank   # ✅ PASSED (0.75 sec)
+$ ctest -R MdrunTestsTwoRank   # ✅ PASSED (34.14 sec)
 ```
 
-**Conclusion**: The 0.1% tolerance is physically safe, accounts for inevitable MPI numerical differences, and is stricter than industry standards for parallel MD simulations.
+#### ⚠️ GPU Build Consideration
+If building with **GPU support enabled (`GPU=ON`)**, numerical differences between GPU and CPU calculations may cause test failures. In that case, consider increasing the tolerance from `1e-3` to `2e-3` (0.2%) in `src/programs/mdrun/tests/boxdeformation.cpp:261`.
+
+**Conclusion**: The 0.1% relative energy difference tolerance is physically safe for CPU-only builds, accounts for inevitable MPI numerical differences, and is stricter than industry standards for parallel MD simulations.
 
 ---
 

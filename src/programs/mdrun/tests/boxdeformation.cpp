@@ -254,11 +254,11 @@ TEST_F(BoxDeformationTest, SinusoidalEnergiesWithinTolerances)
         CommandLine mdrunCaller;
         ASSERT_EQ(0, runner_.callMdrun(mdrunCaller));
 
-        // Use looser tolerance for PME-based system due to GPU/CPU numerical differences,
-        // accumulated FFT errors, and MPI parallel reduction order differences.
-        // Sinusoidal deformation runs longer (80 steps) with time-varying box changes,
-        // leading to numerical error accumulation up to ~0.1% in parallel runs.
-        auto relativeTolerance = relativeToleranceAsFloatingPoint(2, GMX_DOUBLE ? 1e-6 : 1e-3);
+        // Use looser tolerance for PME-based system due to accumulated FFT errors
+        // and MPI parallel reduction order differences.
+        // Sinusoidal deformation runs longer (80 steps) with time-varying box changes.
+        // CPU-only build allows tighter tolerance (1.0) compared to GPU builds.
+        auto relativeTolerance = relativeToleranceAsFloatingPoint(1, GMX_DOUBLE ? 1e-6 : 1e-3);
         EnergyTermsToCompare energyTermsToCompare{
             { { interaction_function[F_EPOT].longname, relativeTolerance },
               { interaction_function[F_EKIN].longname, relativeTolerance } }
