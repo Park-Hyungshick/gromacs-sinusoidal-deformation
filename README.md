@@ -248,6 +248,35 @@ If building with **GPU support enabled (`GPU=ON`)**, numerical differences betwe
 - **Validate results thoroughly**
 - **Test with simple systems first**
 
+### ⚠️ Deformation Rate Limitations
+
+**Excessive deformation rates can cause simulation instability!**
+
+**Common symptoms:**
+- Large interatomic distances (>10 nm) at step 0
+- LINCS/SHAKE constraint failures
+- "Listed nonbonded interaction beyond table limit" warnings
+- CUDA illegal memory access errors
+- Simulation crashes or hangs immediately
+
+**Causes:**
+- Too large amplitude relative to box size
+- Too short period relative to timestep
+- Instantaneous strain rate too high
+
+**Recommendations:**
+- Keep amplitude < 10% of initial box size
+- Use period > 100× timestep for smooth deformation
+- Start with small amplitude and long period for testing
+- Always equilibrate system WITHOUT deformation first
+- Monitor system stability for first few cycles
+
+**Example safe parameters for L₀ = 10 nm, dt = 0.002 ps:**
+```mdp
+deform-sin-amplitude = 0.5 0 0 0 0 0    ; 5% of box size
+deform-sin-period    = 10.0 0 0 0 0 0   ; 5000 timesteps per cycle
+```
+
 ---
 
 ## Build Instructions

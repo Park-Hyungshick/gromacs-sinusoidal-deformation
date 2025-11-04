@@ -272,6 +272,7 @@ gmx_bool ir_vdw_might_be_zero_at_cutoff(const t_inputrec* ir)
 
 bool ir_haveBoxDeformation(const t_inputrec& ir)
 {
+    // Check for linear deformation
     for (int i = 0; i < DIM; i++)
     {
         for (int j = 0; j < DIM; j++)
@@ -281,6 +282,12 @@ bool ir_haveBoxDeformation(const t_inputrec& ir)
                 return true;
             }
         }
+    }
+
+    // Check for sinusoidal deformation
+    if (ir.deformType == DeformationType::Sinusoidal)
+    {
+        return true;
     }
 
     return false;
@@ -1050,7 +1057,13 @@ void pr_inputrec(FILE* fp, int indent, const char* title, const t_inputrec* ir, 
 
         /* NON-equilibrium MD stuff */
         PR("cos-acceleration", ir->cos_accel);
+        PS("deform-type", enumValueToString(ir->deformType));
         pr_matrix(fp, indent, "deform", ir->deform, bMDPformat);
+        if (ir->deformType == DeformationType::Sinusoidal)
+        {
+            pr_matrix(fp, indent, "deform-sin-amplitude", ir->deform_sin_amplitude, bMDPformat);
+            pr_matrix(fp, indent, "deform-sin-period", ir->deform_sin_period, bMDPformat);
+        }
 
         /* SIMULATED TEMPERING */
         PS("simulated-tempering", EBOOL(ir->bSimTemp));

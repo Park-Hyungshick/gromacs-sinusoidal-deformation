@@ -4,7 +4,7 @@
   <Simulation Name="OctaneSandwich">
     <Energy Name="Position Rest.">
       <Real Name="Time 0.000000 Step 0 in frame 0">0</Real>
-      <Real Name="Time 0.020000 Step 10 in frame 1">12.696937</Real>
+      <Real Name="Time 0.020000 Step 10 in frame 1">64.758575</Real>
     </Energy>
   </Simulation>
 </ReferenceData>

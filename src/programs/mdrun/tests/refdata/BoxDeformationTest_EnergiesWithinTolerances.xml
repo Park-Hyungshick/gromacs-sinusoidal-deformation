@@ -4,13 +4,13 @@
   <Simulation Name="spc216">
     <Energy Name="Kinetic En.">
       <Real Name="Time 0.000000 Step 0 in frame 0">1634.5557</Real>
-      <Real Name="Time 0.020000 Step 10 in frame 1">1682.0426</Real>
-      <Real Name="Time 0.040000 Step 20 in frame 2">1676.3651</Real>
+      <Real Name="Time 0.020000 Step 10 in frame 1">1682.1604</Real>
+      <Real Name="Time 0.040000 Step 20 in frame 2">1676.6716</Real>
     </Energy>
     <Energy Name="Potential">
       <Real Name="Time 0.000000 Step 0 in frame 0">-8113.0713</Real>
-      <Real Name="Time 0.020000 Step 10 in frame 1">-8160.2378</Real>
-      <Real Name="Time 0.040000 Step 20 in frame 2">-8154.5811</Real>
+      <Real Name="Time 0.020000 Step 10 in frame 1">-8160.1362</Real>
+      <Real Name="Time 0.040000 Step 20 in frame 2">-8154.7202</Real>
     </Energy>
   </Simulation>
 </ReferenceData>

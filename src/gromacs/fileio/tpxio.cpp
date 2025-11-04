@@ -200,6 +200,7 @@ enum tpxv
     tpxv_RefScaleMultipleCOMs, /**< Add multiple COM groups for refcoord-scale */
     tpxv_InputHistogramCounts, /**< Provide input histogram counts for current expanded ensemble state */
     tpxv_NNPotIFuncType,       /**< Add interaction function type for neural network potential */
+    tpxv_SinusoidalDeformation, /**< Add sinusoidal box deformation support */
     tpxv_Count                 /**< the total number of tpxv versions */
 };
 
@@ -1548,6 +1549,30 @@ static void do_inputrec(gmx::ISerializer* serializer, t_inputrec* ir, int file_v
         serializer->doRvec(&ir->deform[i]);
     }
     serializer->doReal(&ir->cos_accel);
+
+    // Deformation type and sinusoidal parameters (added for sinusoidal deformation)
+    if (file_version >= tpxv_SinusoidalDeformation)
+    {
+        serializer->doEnumAsInt(&ir->deformType);
+        for (i = 0; i < DIM; i++)
+        {
+            serializer->doRvec(&ir->deform_sin_amplitude[i]);
+        }
+        for (i = 0; i < DIM; i++)
+        {
+            serializer->doRvec(&ir->deform_sin_period[i]);
+        }
+    }
+    else
+    {
+        // Old TPR files don't have these fields, set defaults
+        ir->deformType = DeformationType::No;
+        for (i = 0; i < DIM; i++)
+        {
+            clear_rvec(ir->deform_sin_amplitude[i]);
+            clear_rvec(ir->deform_sin_period[i]);
+        }
+    }
 
     serializer->doInt(&ir->userint1);
     serializer->doInt(&ir->userint2);
