@@ -443,7 +443,8 @@ void compute_globals(gmx_global_stat*               gstat,
                      gmx_bool*                      bSumEkinhOld,
                      const int                      flags,
                      int64_t                        step,
-                     gmx::ObservablesReducer*       observablesReducer)
+                     gmx::ObservablesReducer*       observablesReducer,
+                     const gmx::BoxDeformation*     boxDeformation)
 {
     gmx_bool bEner, bPres, bTemp;
     gmx_bool bStopCM, bGStat, bReadEkin, bEkinAveVel, bScaleEkin, bConstrain;
@@ -474,8 +475,21 @@ void compute_globals(gmx_global_stat*               gstat,
     {
         if (!bReadEkin)
         {
+            // Calculate box deformation velocity for kinetic energy calculation
+            // For sinusoidal deformation, this is time-dependent: v(t) = A * omega * cos(omega * t)
+            // For linear deformation, use constant rate from ir->deform
+            matrix deformVelocity;
+            if (boxDeformation && ir->deformType == DeformationType::Sinusoidal)
+            {
+                boxDeformation->getVelocity(deformVelocity, step);
+            }
+            else
+            {
+                copy_mat(ir->deform, deformVelocity);
+            }
+
             wallcycle_start(wcycle, WallCycleCounter::ComputeEKin);
-            calc_ke_part(fr->haveBoxDeformation, ir->deform, x, v, box, &(ir->opts), mdatoms, ekind, nrnb, bEkinAveVel);
+            calc_ke_part(fr->haveBoxDeformation, deformVelocity, x, v, box, &(ir->opts), mdatoms, ekind, nrnb, bEkinAveVel);
             wallcycle_stop(wcycle, WallCycleCounter::ComputeEKin);
         }
     }

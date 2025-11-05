@@ -324,7 +324,8 @@ void ComputeGlobalsElement<algorithm>::compute(gmx::Step            step,
                     energyData_->needToSumEkinhOld(),
                     flags,
                     step,
-                    observablesReducer_);
+                    observablesReducer_,
+                    nullptr);
     if (flags & CGLO_STOPCM && !isInit)
     {
         process_and_stopcm_grp(fplog_, &vcm_, *mdAtoms_->mdatoms(), x, v);

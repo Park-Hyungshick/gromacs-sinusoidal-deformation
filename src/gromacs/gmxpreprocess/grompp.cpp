@@ -2043,16 +2043,44 @@ static void checkExclusionDistances(const gmx_mtop_t&              mtop,
     }
 }
 
-//! Add the velocity profile of \p deform to the velocities in \p state
-static void deformInitFlow(t_state* state, const matrix deform)
+//! Add the velocity profile of box deformation to the velocities in \p state
+static void deformInitFlow(t_state* state, const t_inputrec* ir)
 {
-    // Deform gives the speed of box vector elements, we need to scale relative to the box size
+    // Calculate the initial deformation velocity based on deformation type
+    matrix deformVelocity;
+    clear_mat(deformVelocity);
+
+    if (ir->deformType == DeformationType::Linear)
+    {
+        // For linear deformation: constant velocity from ir->deform
+        copy_mat(ir->deform, deformVelocity);
+    }
+    else if (ir->deformType == DeformationType::Sinusoidal)
+    {
+        // For sinusoidal deformation: v(t) = A * (2π/T) * cos(2πt/T)
+        // At step 0, BoxDeformation::getVelocity uses elapsedTime = (0 + 1) * dt = dt
+        // So we need to calculate velocity at t = dt to match
+        const real elapsedTime = ir->delta_t;
+        for (int d1 = 0; d1 < DIM; d1++)
+        {
+            for (int d2 = 0; d2 < DIM; d2++)
+            {
+                if (ir->deform_sin_amplitude[d1][d2] != 0 && ir->deform_sin_period[d1][d2] != 0)
+                {
+                    const real omega = 2.0 * M_PI / ir->deform_sin_period[d1][d2];
+                    deformVelocity[d1][d2] = ir->deform_sin_amplitude[d1][d2] * omega * std::cos(omega * elapsedTime);
+                }
+            }
+        }
+    }
+
+    // Deform velocity gives the speed of box vector elements, we need to scale relative to the box size
     matrix coordToVelocity;
     for (int d1 = 0; d1 < DIM; d1++)
     {
         for (int d2 = 0; d2 < DIM; d2++)
         {
-            coordToVelocity[d1][d2] = deform[d1][d2] / state->box[d1][d1];
+            coordToVelocity[d1][d2] = deformVelocity[d1][d2] / state->box[d1][d1];
         }
     }
 
@@ -2668,7 +2696,7 @@ int gmx_grompp(int argc, char* argv[])
     /* After we are done with all checks on the state, we can add the flow profile */
     if (opts->deformInitFlow)
     {
-        deformInitFlow(&state, ir->deform);
+        deformInitFlow(&state, ir);
     }
 
     if (debug)

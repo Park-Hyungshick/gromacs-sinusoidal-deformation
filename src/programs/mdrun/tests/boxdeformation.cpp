@@ -176,7 +176,9 @@ TEST_F(BoxDeformationTest, SinusoidalflowDoesNotAffectEkin)
 {
     // Test sinusoidal deformation with a simple LJ system
     // We use gen-temp=0 to ensure deterministic behavior (like flowDoesNotAffectEkin)
-    // This verifies that the sinusoidal flow field is applied without affecting kinetic energy
+    // We use nsteps=0 to test only the initial state, like the linear deformation test
+    // The amplitude is adjusted so that v(t=dt) matches the linear test velocity (0.06 nm/ps)
+    // This allows direct comparison of numerical accuracy between linear and sinusoidal
     std::string theMdpFile =
             "coulombtype      = reaction-field\n"
             "nstenergy        = 10\n"
@@ -186,11 +188,11 @@ TEST_F(BoxDeformationTest, SinusoidalflowDoesNotAffectEkin)
             "rcoulomb         = 0.3\n"
             "rvdw             = 0.3\n"
             "dt               = 0.002\n"
-            "nsteps           = 20\n"
+            "nsteps           = 0\n"
             "gen-vel          = yes\n"
             "gen-temp         = 0\n"
             "deform-type      = sinusoidal\n"
-            "deform-sin-amplitude = 0 0 0 0 6e-2 0\n"
+            "deform-sin-amplitude = 0 0 0 0 4.016290e-04 0\n"
             "deform-sin-period    = 0 0 0 0 0.04 0\n"
             "deform-init-flow = yes\n";
 

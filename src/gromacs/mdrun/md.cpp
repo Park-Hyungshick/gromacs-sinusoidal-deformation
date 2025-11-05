@@ -684,7 +684,8 @@ void gmx::LegacySimulator::do_md()
                         &bSumEkinhOld,
                         cglo_flags_iteration,
                         step,
-                        &observablesReducer);
+                        &observablesReducer,
+                        upd.deform());
         // Clean up after pre-step use of compute_globals()
         observablesReducer.markAsReadyToReduce();
 
@@ -730,7 +731,8 @@ void gmx::LegacySimulator::do_md()
                         &bSumEkinhOld,
                         cglo_flags & ~CGLO_PRESSURE,
                         step,
-                        &observablesReducer);
+                        &observablesReducer,
+                        upd.deform());
         // Clean up after pre-step use of compute_globals()
         observablesReducer.markAsReadyToReduce();
     }
@@ -1090,7 +1092,8 @@ void gmx::LegacySimulator::do_md()
                             &bSumEkinhOld,
                             cglo_flags,
                             step,
-                            &observablesReducer);
+                            &observablesReducer,
+                            upd.deform());
         }
         clear_mat(force_vir);
 
@@ -1824,7 +1827,8 @@ void gmx::LegacySimulator::do_md()
                                         | (!EI_VV(ir->eI) ? CGLO_TEMPERATURE : 0)
                                         | (!EI_VV(ir->eI) ? CGLO_PRESSURE : 0) | CGLO_CONSTRAINT,
                                 step,
-                                &observablesReducer);
+                                &observablesReducer,
+                                upd.deform());
                 if (!EI_VV(ir->eI) && bStopCM)
                 {
                     process_and_stopcm_grp(

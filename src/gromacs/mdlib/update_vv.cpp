@@ -218,7 +218,8 @@ void integrateVVFirstStep(int64_t                   step,
                             bSumEkinhOld,
                             cglo_flags,
                             step,
-                            observablesReducer);
+                            observablesReducer,
+                            upd->deform());
             /* explanation of above:
                 a) We compute Ekin at the full time step
                 if 1) we are using the AveVel Ekin, and it's not the
@@ -297,7 +298,8 @@ void integrateVVFirstStep(int64_t                   step,
                                 bSumEkinhOld,
                                 CGLO_GSTAT | CGLO_TEMPERATURE,
                                 step,
-                                observablesReducer);
+                                observablesReducer,
+                                upd->deform());
                 wallcycle_start(wcycle, WallCycleCounter::Update);
             }
         }
@@ -456,7 +458,8 @@ void integrateVVSecondStep(int64_t                   step,
                         bSumEkinhOld,
                         (bGStat ? CGLO_GSTAT : 0) | CGLO_TEMPERATURE,
                         step,
-                        observablesReducer);
+                        observablesReducer,
+                        upd->deform());
         wallcycle_start(wcycle, WallCycleCounter::Update);
         trotter_update(ir,
                        step,

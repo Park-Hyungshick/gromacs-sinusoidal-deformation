@@ -420,7 +420,8 @@ void gmx::LegacySimulator::do_rerun()
                         &bSumEkinhOld,
                         cglo_flags,
                         step,
-                        &observablesReducer);
+                        &observablesReducer,
+                        nullptr);
         // Clean up after pre-step use of compute_globals()
         observablesReducer.markAsReadyToReduce();
     }
@@ -802,7 +803,8 @@ void gmx::LegacySimulator::do_rerun()
                             &bSumEkinhOld,
                             cglo_flags,
                             step,
-                            &observablesReducer);
+                            &observablesReducer,
+                            nullptr);
             // Clean up after pre-step use of compute_globals()
             observablesReducer.markAsReadyToReduce();
         }

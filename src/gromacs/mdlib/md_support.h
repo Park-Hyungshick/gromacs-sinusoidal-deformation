@@ -59,6 +59,7 @@ namespace gmx
 {
 template<typename T>
 class ArrayRef;
+class BoxDeformation;
 class MDLogger;
 class ObservablesReducer;
 class SimulationSignaller;
@@ -131,6 +132,7 @@ void compute_globals(gmx_global_stat*               gstat,
                      gmx_bool*                      bSumEkinhOld,
                      int                            flags,
                      int64_t                        step,
-                     gmx::ObservablesReducer*       observablesReducer);
+                     gmx::ObservablesReducer*       observablesReducer,
+                     const gmx::BoxDeformation*     boxDeformation);
 
 #endif
