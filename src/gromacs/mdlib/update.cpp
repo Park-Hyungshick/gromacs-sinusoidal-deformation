@@ -900,15 +900,32 @@ static void do_update_vv_vel(int                                 start,
                              gmx::ArrayRef<const real>           invmass,
                              gmx::ArrayRef<const ParticleType>   ptype,
                              gmx::ArrayRef<const unsigned short> cFREEZE,
+                             const rvec*                         x,
                              rvec                                v[],
                              const rvec                          f[],
                              gmx_bool                            bExtended,
                              real                                veta,
-                             real                                alpha)
+                             real                                alpha,
+                             const matrix                        boxDeformation,
+                             const matrix                        box)
 {
     int  gf = 0, ga = 0;
     int  n, d;
     real g, mv1, mv2;
+
+    // Check if box deformation is active
+    const bool haveBoxDeformation = (boxDeformation[XX][XX] != 0 || boxDeformation[YY][XX] != 0
+                                     || boxDeformation[ZZ][XX] != 0 || boxDeformation[XX][YY] != 0
+                                     || boxDeformation[YY][YY] != 0 || boxDeformation[ZZ][YY] != 0
+                                     || boxDeformation[XX][ZZ] != 0 || boxDeformation[YY][ZZ] != 0
+                                     || boxDeformation[ZZ][ZZ] != 0);
+
+    // Calculate flow matrix for box deformation if needed
+    matrix deformFlowMatrix;
+    if (haveBoxDeformation)
+    {
+        gmx::setBoxDeformationFlowMatrix(boxDeformation, box, deformFlowMatrix);
+    }
 
     if (bExtended)
     {
@@ -939,6 +956,12 @@ static void do_update_vv_vel(int                                 start,
             {
                 v[n][d] = mv1 * (mv1 * v[n][d] + 0.5 * (w_dt * mv2 * f[n][d]))
                           + 0.5 * acceleration[ga][d] * dt;
+
+                // Add box deformation flow velocity
+                if (haveBoxDeformation)
+                {
+                    v[n][d] += iprod(x[n], deformFlowMatrix[d]) * dt;
+                }
             }
             else
             {
@@ -958,7 +981,9 @@ static void do_update_vv_pos(int                                 start,
                              rvec                                xprime[],
                              const rvec                          v[],
                              gmx_bool                            bExtended,
-                             real                                veta)
+                             real                                veta,
+                             const matrix                        boxDeformation,
+                             const matrix                        box)
 {
     int  gf = 0;
     int  n, d;
@@ -1879,11 +1904,14 @@ void Update::Impl::update_coords(const t_inputrec&                 inputRecord,
                                              invMass,
                                              ptype,
                                              cFREEZE_,
+                                             x_rvec,
                                              v_rvec,
                                              f_rvec,
                                              bExtended,
                                              state->veta,
-                                             alpha);
+                                             alpha,
+                                             boxDeformationVelocity,
+                                             state->box);
                             break;
                         case etrtPOSITION:
                             do_update_vv_pos(start_th,
@@ -1897,7 +1925,9 @@ void Update::Impl::update_coords(const t_inputrec&                 inputRecord,
                                              xp_rvec,
                                              v_rvec,
                                              bExtended,
-                                             state->veta);
+                                             state->veta,
+                                             boxDeformationVelocity,
+                                             state->box);
                             break;
                     }
                     break;

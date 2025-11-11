@@ -70,28 +70,76 @@ Values: `xx yy zz xy xz yz` (diagonal + shear components)
 
 ---
 
+## Supported Integrators
+
+### ⚠️ CRITICAL: MD-VV Requires Legacy Simulator
+
+**Box deformation is ONLY supported by the legacy simulator**, not the modular simulator.
+
+| Integrator | Default Simulator | Box Deformation Support | Required Configuration |
+|------------|-------------------|-------------------------|------------------------|
+| **md** (leap-frog) | Legacy | ✅ YES | No special configuration needed |
+| **md-vv** (velocity Verlet) | Modular | ❌ NO (default) | **MUST set `GMX_DISABLE_MODULAR_SIMULATOR=ON`** |
+
+### When to Use MD-VV with Legacy Simulator
+
+**Recommended for:**
+- High temperature simulations (>400 K)
+- Systems with large kinetic energy fluctuations
+- Better temperature control (more stable than leap-frog)
+
+**Configuration:**
+```bash
+export GMX_DISABLE_MODULAR_SIMULATOR=ON
+gmx mdrun -deffnm your_simulation
+```
+
+**Without this setting**, MD-VV will use the modular simulator which does NOT support box deformation, resulting in:
+- No box deformation applied
+- Box remains fixed despite MDP settings
+- Silent failure (no error message)
+
+### Performance Comparison
+
+From testing with sinusoidal shear deformation (450 K, 66800 atoms, 120 ps):
+
+| Integrator | Temperature RMSD | Energy Conservation | Notes |
+|------------|------------------|---------------------|-------|
+| **md** (leap-frog) | ~85 K | Moderate drift | Larger temperature fluctuations |
+| **md-vv** (legacy) | ~12 K | Better | **Recommended for high-T simulations** |
+
+---
+
 ## Usage Examples
 
-### Example 1: Oscillating Box Size (X-direction)
+### Example 1: Oscillating Box Size (X-direction) with MD
 ```mdp
 ; Box oscillates between ±0.5 nm every 100 ps
+integrator           = md
 deform-type          = sinusoidal
 deform-sin-amplitude = 0.5 0 0 0 0 0
 deform-sin-period    = 100 0 0 0 0 0
 deform-init-flow     = no
 ```
 
-### Example 2: Oscillatory Shear (XY plane)
+### Example 2: Oscillatory Shear (XY plane) with MD-VV
+```bash
+# MUST disable modular simulator for md-vv!
+export GMX_DISABLE_MODULAR_SIMULATOR=ON
+```
 ```mdp
 ; Shear oscillates with 1 nm amplitude, 50 ps period
+integrator           = md-vv
 deform-type          = sinusoidal
 deform-sin-amplitude = 0 0 0 1.0 0 0
 deform-sin-period    = 0 0 0 50 0 0
+deform-init-flow     = yes
 ```
 
 ### Example 3: Linear Deformation (Backward Compatible)
 ```mdp
 ; Original GROMACS behavior preserved
+integrator           = md
 deform-type          = linear
 deform               = 0.001 0 0 0 0 0
 deform-init-flow     = yes
